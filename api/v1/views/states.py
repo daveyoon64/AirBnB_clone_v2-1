@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 '''States API view'''
+import json
 from flask import Flask, jsonify, abort, request
 from models import storage
 from api.v1.views import app_views
@@ -36,12 +37,16 @@ def del_state_id(state_id):
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def post_state():
-    '''Create a state'''
-    print('hello', file=sys.stderr)
-    if not request.json or not 'name' in request.json:
-        abort(400)
-    state = request.json
-    print('hello {}'.format(state), file=sys.stderr)
-    new = State('state')
+    '''Create a state''' 
+    if not 'name' in request.get_json():
+        abort(400, 'Missing name')
+    #test = request.get_json()
+    #try:
+    #    json.loads(test)
+    #except ValueError:
+    #    abort(400, 'Not a JSON')
+    state = request.get_json()
+    new = State(**state)
+    storage.new(new)
     storage.save()
-    return jsonify(new.to_dict()), 200
+    return jsonify(new.to_dict()), 201

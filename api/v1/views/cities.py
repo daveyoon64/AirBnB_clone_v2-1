@@ -19,7 +19,7 @@ def get_cities(state_id):
             if v.state_id == state.id:
                 j_list.append(v.to_dict())
         return jsonify(j_list)
-    except:
+    except Exception:
         return abort(404)
 
 
@@ -29,7 +29,7 @@ def get_city_id(city_id):
     try:
         city = storage.get('City', city_id)
         return jsonify(city.to_dict())
-    except:
+    except Exception:
         return abort(404)
 
 
@@ -52,7 +52,7 @@ def post_city(state_id):
         state = storage.get('State', state_id)
         if type(request.get_json()) is not dict:
             abort(400, 'Not a JSON')
-        elif not 'name' in request.get_json():
+        elif 'name' not in request.get_json():
             abort(400, 'Missing name')
         else:
             data = request.get_json()
@@ -61,21 +61,21 @@ def post_city(state_id):
             storage.new(new)
             storage.save()
         return jsonify(new.to_dict()), 201
-    except:
+    except Exception:
         return abort(404)
 
 
 @app_views.route('/cities/<city_id>', methods=['PUT'], strict_slashes=False)
 def update_city(city_id):
     '''Update a city'''
+    ignore = ['created_at', 'updated_at', 'state_id']
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
     if 'City.' + city_id in storage.all('City'):
         city = storage.get('City', city_id)
         data = request.get_json()
         for k, v in data.items():
-            if k is not 'id' or k is not 'created_at' or k is not 'updated_at'\
-                    or k is not 'state_id':
+            if k not in ignore:
                 setattr(city, k, v)
         storage.save()
         return jsonify(city.to_dict()), 200

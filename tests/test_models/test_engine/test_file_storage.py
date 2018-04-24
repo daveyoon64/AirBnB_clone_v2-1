@@ -167,8 +167,6 @@ class testFileStorage(unittest.TestCase):
         '''
            Test count method
         '''
-        count_a = models.storage.count()
-        state = State(name="Texas")
-        state.save()
-        count_b = models.storage.count()
-        self.assertEqual(count_a+1, count_b)
+        count = models.storage.count('State')
+        all_state = models.storage.all('State')
+        self.assertEqual(count, len(all_state))

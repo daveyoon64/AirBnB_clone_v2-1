@@ -24,7 +24,7 @@ def get_amenity_id(amenity_id):
     try:
         amenity = storage.get('Amenity', amenity_id)
         return jsonify(amenity.to_dict())
-    except:
+    except Exception:
         return abort(404)
 
 
@@ -45,7 +45,7 @@ def post_amenity():
     '''Create an amenity'''
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
-    elif not 'name' in request.get_json():
+    elif 'name' not in request.get_json():
         abort(400, 'Missing name')
     else:
         amenity = request.get_json()
@@ -55,16 +55,18 @@ def post_amenity():
     return jsonify(new.to_dict()), 201
 
 
-@app_views.route('/amenities/<amenity_id>', methods=['PUT'], strict_slashes=False)
+@app_views.route('/amenities/<amenity_id>', methods=['PUT'],
+                 strict_slashes=False)
 def update_amenity(amenity_id):
     '''Update an amenity'''
+    ignore = ['id', 'created_at', 'updated_at']
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
     if 'Amenity.' + amenity_id in storage.all('Amenity'):
         amenity = storage.get('Amenity', amenity_id)
         data = request.get_json()
         for k, v in data.items():
-            if k is not 'id' or k is not 'created_at' or k is not 'updated_at':
+            if k not in ignore:
                 setattr(amenity, k, v)
         storage.save()
         return jsonify(amenity.to_dict()), 200

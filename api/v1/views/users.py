@@ -58,16 +58,14 @@ def post_user():
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id):
     '''Update a user'''
+    ignore = ['id', 'created_at', 'updated_at', 'email']
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
     if 'User.' + user_id in storage.all('User'):
         user = storage.get('User', user_id)
         data = request.get_json()
         for k, v in data.items():
-            if k is not 'id' or\
-               k is not 'created_at' or\
-               k is not 'updated_at' or\
-               k is not 'email':
+            if k not in ignore:
                 setattr(user, k, v)
         storage.save()
         return jsonify(user.to_dict()), 200

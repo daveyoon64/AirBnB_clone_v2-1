@@ -9,6 +9,7 @@ import json
 import sys
 import io
 import unittest
+import models
 from models.base_model import BaseModel
 from models.state import State
 from models.engine.file_storage import FileStorage
@@ -152,3 +153,22 @@ class testFileStorage(unittest.TestCase):
             json_dict = json.load(fd)
         for key, value in json_dict.items():
             self.assertTrue(value['id'] != my_id)
+
+    def test_get_method(self):
+        '''
+            Test get method
+        '''
+        state = State(name='California')
+        state.save()
+        id = state.id
+        self.assertEqual(models.storage.get('State', id), state)
+
+    def test_count_method(self):
+        '''
+           Test count method
+        '''
+        count_a = models.storage.count()
+        state = State(name="Texas")
+        state.save()
+        count_b = models.storage.count()
+        self.assertEqual(count_a+1, count_b)

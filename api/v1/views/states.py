@@ -16,6 +16,7 @@ def get_states():
         j_list.append(v.to_dict())
     return jsonify(j_list)
 
+
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
 def get_state_id(state_id):
     '''Get state by id'''
@@ -25,7 +26,9 @@ def get_state_id(state_id):
     except:
         return abort(404)
 
-@app_views.route('/states/<state_id>', methods=['DELETE'], strict_slashes=False)
+
+@app_views.route('/states/<state_id>', methods=['DELETE']
+                 strict_slashes=False)
 def del_state_id(state_id):
     '''Delete state by id'''
     if 'State.' + state_id in storage.all('State'):
@@ -35,9 +38,10 @@ def del_state_id(state_id):
     else:
         return abort(404)
 
+
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def post_state():
-    '''Create a state''' 
+    '''Create a state'''
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
     elif not 'name' in request.get_json():
@@ -49,16 +53,17 @@ def post_state():
         storage.save()
     return jsonify(new.to_dict()), 201
 
+
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
 def update_state(state_id):
-    '''Update a state''' 
+    '''Update a state'''
     if type(request.get_json()) is not dict:
         abort(400, 'Not a JSON')
     if 'State.' + state_id in storage.all('State'):
         state = storage.get('State', state_id)
         data = request.get_json()
         for k, v in data.items():
-            if k is not 'id' or k is not 'created_at' or k is not 'updated_at': 
+            if k is not 'id' or k is not 'created_at' or k is not 'updated_at':
                 setattr(state, k, v)
             storage.save()
         return jsonify(state.to_dict()), 200

@@ -27,7 +27,7 @@ def get_state_id(state_id):
         return abort(404)
 
 
-@app_views.route('/states/<state_id>', methods=['DELETE']
+@app_views.route('/states/<state_id>', methods=['DELETE'],
                  strict_slashes=False)
 def del_state_id(state_id):
     '''Delete state by id'''
@@ -65,7 +65,7 @@ def update_state(state_id):
         for k, v in data.items():
             if k is not 'id' or k is not 'created_at' or k is not 'updated_at':
                 setattr(state, k, v)
-            storage.save()
+        storage.save()
         return jsonify(state.to_dict()), 200
     else:
         return abort(404)

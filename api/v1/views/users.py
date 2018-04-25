@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''Users API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.user import User
@@ -14,7 +14,7 @@ def get_user_users():
     j_list = []
     for k, v in storage.all('User').items():
         j_list.append(v.to_dict())
-    return jsonify(j_list)
+    return make_response(jsonify(j_list))
 
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
@@ -22,7 +22,7 @@ def get_user_id(user_id):
     '''Get user by id'''
     try:
         user = storage.get('User', user_id)
-        return jsonify(user.to_dict())
+        return make_response(jsonify(user.to_dict()))
     except Exception:
         return abort(404)
 
@@ -33,7 +33,7 @@ def del_user_id(user_id):
     if 'User.' + user_id in storage.all('User'):
         user = storage.get('User', user_id)
         storage.delete(user)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -52,7 +52,7 @@ def post_user():
         new = User(**user)
         storage.new(new)
         storage.save()
-    return jsonify(new.to_dict()), 201
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
@@ -68,6 +68,6 @@ def update_user(user_id):
             if k not in ignore:
                 setattr(user, k, v)
         storage.save()
-        return jsonify(user.to_dict()), 200
+        return make_response(jsonify(user.to_dict()), 200)
     else:
         return abort(404)

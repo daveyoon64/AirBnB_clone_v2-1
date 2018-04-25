@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''Places API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.review import Review
@@ -15,7 +15,7 @@ def get_place_reviews(place_id):
     if 'Place.' + place_id in storage.all('Place'):
         for k, v in storage.all('Review').items():
             j_list.append(v.to_dict())
-        return jsonify(j_list)
+        return make_response(jsonify(j_list))
     else:
         abort(404)
 
@@ -25,7 +25,7 @@ def get_review_id(review_id):
     '''Get review by id'''
     try:
         review = storage.get('Review', review_id)
-        return jsonify(review.to_dict())
+        return make_response(jsonify(review.to_dict()))
     except Exception:
         return abort(404)
 
@@ -37,7 +37,7 @@ def del_review_id(review_id):
     if 'Review.' + review_id in storage.all('Review'):
         review = storage.get('Review', review_id)
         storage.delete(review)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -63,7 +63,7 @@ def post_review(place_id):
             abort(404)
     else:
         abort(404)
-    return jsonify(new.to_dict()), 201
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route('/reviews/<review_id>', methods=['PUT'], strict_slashes=False)
@@ -79,6 +79,6 @@ def update_review(review_id):
             if k not in ignore:
                 setattr(review, k, v)
         storage.save()
-        return jsonify(review.to_dict()), 200
+        return make_response(jsonify(review.to_dict()), 200)
     else:
         return abort(404)

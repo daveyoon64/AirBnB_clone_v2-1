@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''Places API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.place import Place
@@ -21,7 +21,7 @@ def get_places(city_id):
     for k, v in storage.all('Place').items():
         if v.city_id == city.id:
             j_list.append(v.to_dict())
-    return jsonify(j_list)
+    return make_response(jsonify(j_list))
 
 
 @app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
@@ -29,7 +29,7 @@ def get_place_id(place_id):
     '''Get place by id'''
     try:
         place = storage.get('Place', place_id)
-        return jsonify(place.to_dict())
+        return make_response(jsonify(place.to_dict()))
     except Exception:
         return abort(404)
 
@@ -41,7 +41,7 @@ def del_place_id(place_id):
     if 'Place.' + place_id in storage.all('Place'):
         place = storage.get('Place', place_id)
         storage.delete(place)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -64,12 +64,10 @@ def post_place(city_id):
             storage.new(new)
             storage.save()
         else:
-            print('user not found', file=sys.stderr)
             abort(404)
     else:
-        print('city not found', file=sys.stderr)
         abort(404)
-    return jsonify(new.to_dict()), 201
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)
@@ -85,6 +83,6 @@ def update_place(place_id):
             if k not in ignore:
                 setattr(place, k, v)
         storage.save()
-        return jsonify(place.to_dict()), 200
+        return make_response(jsonify(place.to_dict()), 200)
     else:
         return abort(404)

@@ -16,7 +16,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "0.0.0.0"}})
 @app.errorhandler(404)
 def page_not_found(e):
     '''handle 404 page'''
-    return make_reponse(jsonify({"error": "Not found"}), 404)
+    return make_response(jsonify({"error": "Not found"}), 404)
 
 
 @app.teardown_appcontext

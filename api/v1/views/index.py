@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''index for views'''
 from api.v1.views import app_views
-from flask import jsonify
+from flask import jsonify, make_response
 from models import storage
 
 props = {'Amenity': 'amenities', 'City': 'cities',
@@ -14,7 +14,7 @@ def status_check():
     '''
         return status of API
     '''
-    return jsonify({'status': 'OK'})
+    return make_response(jsonify({'status': 'OK'}))
 
 
 @app_views.route('/stats')
@@ -25,4 +25,4 @@ def get_stats():
     stats = {}
     for k, v in props.items():
         stats[v] = storage.count(k)
-    return jsonify(stats)
+    return make_response(jsonify(stats))

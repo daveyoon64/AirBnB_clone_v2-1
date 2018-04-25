@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''Amenities API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.amenity import Amenity
@@ -14,7 +14,7 @@ def get_amenities():
     j_list = []
     for k, v in storage.all('Amenity').items():
         j_list.append(v.to_dict())
-    return jsonify(j_list)
+    return make_response(jsonify(j_list))
 
 
 @app_views.route('/amenities/<amenity_id>', methods=['GET'],
@@ -23,7 +23,7 @@ def get_amenity_id(amenity_id):
     '''Get amenity by id'''
     try:
         amenity = storage.get('Amenity', amenity_id)
-        return jsonify(amenity.to_dict())
+        return make_response(jsonify(amenity.to_dict()))
     except Exception:
         return abort(404)
 
@@ -35,7 +35,7 @@ def del_amenity_id(amenity_id):
     if 'Amenity.' + amenity_id in storage.all('Amenity'):
         amenity = storage.get('Amenity', amenity_id)
         storage.delete(amenity)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -52,7 +52,7 @@ def post_amenity():
         new = Amenity(**amenity)
         storage.new(new)
         storage.save()
-    return jsonify(new.to_dict()), 201
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route('/amenities/<amenity_id>', methods=['PUT'],
@@ -69,6 +69,6 @@ def update_amenity(amenity_id):
             if k not in ignore:
                 setattr(amenity, k, v)
         storage.save()
-        return jsonify(amenity.to_dict()), 200
+        return make_response(jsonify(amenity.to_dict()), 200)
     else:
         return abort(404)

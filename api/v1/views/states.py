@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''States API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.state import State
@@ -14,7 +14,7 @@ def get_states():
     j_list = []
     for k, v in storage.all('State').items():
         j_list.append(v.to_dict())
-    return jsonify(j_list)
+    return make_response(jsonify(j_list))
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
@@ -22,7 +22,7 @@ def get_state_id(state_id):
     '''Get state by id'''
     try:
         state = storage.get('State', state_id)
-        return jsonify(state.to_dict())
+        return make_response(jsonify(state.to_dict()))
     except Exception:
         return abort(404)
 
@@ -34,7 +34,7 @@ def del_state_id(state_id):
     if 'State.' + state_id in storage.all('State'):
         state = storage.get('State', state_id)
         storage.delete(state)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -51,7 +51,7 @@ def post_state():
         new = State(**state)
         storage.new(new)
         storage.save()
-    return jsonify(new.to_dict()), 201
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
@@ -67,6 +67,6 @@ def update_state(state_id):
             if k not in ignore:
                 setattr(state, k, v)
         storage.save()
-        return jsonify(state.to_dict()), 200
+        return make_response(jsonify(state.to_dict()), 200)
     else:
         return abort(404)

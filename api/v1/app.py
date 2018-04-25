@@ -6,6 +6,7 @@ from flask import Flask, jsonify
 from models import storage
 from api.v1.views import app_views
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
@@ -27,4 +28,10 @@ def close_app(error):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    env_host = os.getenv('HBNB_API_HOST')
+    env_port = os.getenv('HBNB_API_PORT')
+    if env_host is None:
+        env_host = '0.0.0.0'
+    if env_port is None:
+        env_port = 5000
+    app.run(host=env_host, port=int(env_port))

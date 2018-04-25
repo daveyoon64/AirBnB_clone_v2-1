@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''Cities API view'''
 import json
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from api.v1.views import app_views
 from models.state import City
@@ -18,7 +18,7 @@ def get_cities(state_id):
         for k, v in storage.all('City').items():
             if v.state_id == state.id:
                 j_list.append(v.to_dict())
-        return jsonify(j_list)
+        return make_response(jsonify(j_list))
     except Exception:
         return abort(404)
 
@@ -28,7 +28,7 @@ def get_city_id(city_id):
     '''Get city by id'''
     try:
         city = storage.get('City', city_id)
-        return jsonify(city.to_dict())
+        return make_response(jsonify(city.to_dict()))
     except Exception:
         return abort(404)
 
@@ -39,7 +39,7 @@ def del_city_id(city_id):
     if 'City.' + city_id in storage.all('City'):
         city = storage.get('City', city_id)
         storage.delete(city)
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         return abort(404)
 
@@ -60,7 +60,7 @@ def post_city(state_id):
             new = City(**data)
             storage.new(new)
             storage.save()
-        return jsonify(new.to_dict()), 201
+        return make_response(jsonify(new.to_dict()), 201)
     except Exception:
         return abort(404)
 
@@ -78,6 +78,6 @@ def update_city(city_id):
             if k not in ignore:
                 setattr(city, k, v)
         storage.save()
-        return jsonify(city.to_dict()), 200
+        return make_response(jsonify(city.to_dict()), 200)
     else:
         return abort(404)

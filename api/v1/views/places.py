@@ -26,11 +26,10 @@ def get_places(city_id):
 @app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
 def get_place_id(place_id):
     '''Get place by id'''
-    try:
-        place = storage.get('Place', place_id)
-        return make_response(jsonify(place.to_dict()))
-    except Exception:
-        return abort(404)
+    place = storage.get('Place', place_id)
+    if place is None:
+        abort(404)
+    return make_response(jsonify(place.to_dict()))
 
 
 @app_views.route('/places/<place_id>', methods=['DELETE'],

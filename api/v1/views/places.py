@@ -36,12 +36,11 @@ def get_place_id(place_id):
                  strict_slashes=False)
 def del_place_id(place_id):
     '''Delete place by id'''
-    if 'Place.' + place_id in storage.all('Place'):
-        place = storage.get('Place', place_id)
-        storage.delete(place)
-        return make_response(jsonify({}), 200)
-    else:
-        return abort(404)
+    place = storage.get('Place', place_id)
+    if place is None:
+        abort(404)
+    place.delete()
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'],

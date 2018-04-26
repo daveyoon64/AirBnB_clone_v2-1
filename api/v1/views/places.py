@@ -56,10 +56,8 @@ def post_place(city_id):
         abort(400, 'Missing name')
     if 'City.' + city_id in storage.all('City'):
         if 'User.' + r['user_id'] in storage.all('User'):
-            place = request.get_json()
-            new = Place(**place)
-            storage.new(new)
-            storage.save()
+            new = Place(**r)
+            new.save()
         else:
             abort(404)
     else:
@@ -79,6 +77,7 @@ def update_place(place_id):
     place = storage.get('Place', place_id)
     if place is None:
         abort(404)
+
     for k, v in data.items():
         if k not in ignore:
             setattr(place, k, v)

@@ -7,7 +7,6 @@ from api.v1.views import app_views
 from models.place import Place
 from models.user import User
 from models.city import City
-import sys
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -51,7 +50,7 @@ def del_place_id(place_id):
 def post_place(city_id):
     '''Create a place'''
     r = request.get_json()
-    if type(r) is not dict:
+    if r is None:
         abort(400, 'Not a JSON')
     elif 'user_id' not in r:
         abort(400, 'Missing user_id')
@@ -74,15 +73,16 @@ def post_place(city_id):
 def update_place(place_id):
     '''Update a place'''
     ignore = ['id', 'created_at', 'updated_at', 'user_id', 'city_id']
-    if type(request.get_json()) is not dict:
+
+    data = request.get_json()
+    if data is None:
         abort(400, 'Not a JSON')
-    if 'Place.' + place_id in storage.all('Place'):
-        place = storage.get('Place', place_id)
-        data = request.get_json()
-        for k, v in data.items():
-            if k not in ignore:
-                setattr(place, k, v)
-        storage.save()
-        return make_response(jsonify(place.to_dict()), 200)
-    else:
-        return abort(404)
+
+    place = storage.get('Place', place_id)
+    if place is None:
+        abort(404)
+    for k, v in data.items():
+        if k not in ignore:
+            setattr(place, k, v)
+    storage.save()
+    return make_response(jsonify(place.to_dict()), 200)

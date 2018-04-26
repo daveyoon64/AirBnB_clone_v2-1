@@ -49,11 +49,11 @@ def post_place(city_id):
     '''Create a place'''
     r = request.get_json()
     if r is None:
-        return (jsonify({"error": "Not a JSON"}), 400)
+        return make_response(jsonify({"error": "Not a JSON"}), 400)
     elif 'user_id' not in r:
-        return (jsonify({"error": "Missing user_id"}), 400)
+        return make_response(jsonify({"error": "Missing user_id"}), 400)
     elif 'name' not in r:
-        return (jsonify({"error": "Missing name"}), 400)
+        return make_response(jsonify({"error": "Missing name"}), 400)
     if 'City.' + city_id in storage.all('City'):
         if 'User.' + r['user_id'] in storage.all('User'):
             new = Place(**r)
@@ -72,7 +72,7 @@ def update_place(place_id):
 
     data = request.get_json()
     if data is None:
-        return (jsonify({"error": "Not a JSON"}), 400)
+        return make_response(jsonify({"error": "Not a JSON"}), 400)
 
     place = storage.get('Place', place_id)
     if place is None:

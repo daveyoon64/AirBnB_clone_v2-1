@@ -83,7 +83,7 @@ class testDBStorage(unittest.TestCase):
         all_state = models.storage.all('State')
         self.assertEqual(count, len(all_state))
 
-    def test_count_methodi_inc(self):
+    def test_count_method_inc(self):
         '''
            Test count method inc
         '''
